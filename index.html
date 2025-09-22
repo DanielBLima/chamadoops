@@ -116,7 +116,7 @@
   </div>
   
   <!-- Company Selection Modal -->
-  <div id="company-modal" class="fixed inset-0 z-50 hidden">
+  <div id="company-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
     <div class="modal-overlay fixed inset-0 bg-gray-700 bg-opacity-80 transition-opacity opacity-0"></div>
     <div class="modal-panel relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 transition-all opacity-0 scale-95">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Selecione sua Empresa</h3>
@@ -271,7 +271,7 @@
             },
             'disparo-blip': {
                 title: 'Disparo via Blip – WhatsApp',
-                fields: `<div><label class="block text-sm font-medium text-gray-700">Fraseologia (texto da mensagem) *</label><textarea name="Fraseologia" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></textarea></div><div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Texto Botão 1</label><input name="Botão 1" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"></div><div><label class="block text-sm font-medium text-gray-700">Texto Botão 2</label><input name="Botão 2" value="Pagamento Realizado" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"></div></div><div><label class="block text-sm font-medium text-gray-700">Links da Base de Clientes *</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Link da Base" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Link da planilha ou base" required></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link da Base</button></div>`
+                fields: `<div><label class="block text-sm font-medium text-gray-700">Fraseologia (texto da mensagem) *</label><textarea name="Fraseologia" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></textarea></div><div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Texto Botão 1</label><input name="Botão 1" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"></div><div><label class="block text-sm font-medium text-gray-700">Texto Botão 2</label><input name="Botão 2" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"></div></div><div><label class="block text-sm font-medium text-gray-700">Links da Base de Clientes *</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Link da Base" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Link da planilha ou base" required></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link da Base</button></div>`
             },
              'correcao-lancamento': {
                 title: 'Correção de Lançamento',
@@ -346,7 +346,6 @@
                 modal.querySelector('.modal-overlay').classList.replace('opacity-0', 'opacity-100');
                 modal.querySelector('.modal-panel').classList.replace('opacity-0', 'opacity-100');
                 modal.querySelector('.modal-panel').classList.replace('scale-95', 'scale-100');
-                // Auto-focus no primeiro campo
                 modalForm.querySelector('input, textarea, select')?.focus();
             }, 10);
         }
@@ -376,7 +375,7 @@
             const title = modalTitle.textContent;
             const emailTo = 'ops@idealtrends.atlassian.net';
             
-            let body = `Olá, equipe OPS.\n\nPor favor, seguir com a seguinte solicitação:\n\n\n`;
+            let body = `Olá, equipe OPS.\n\nPor favor, seguir com a seguinte solicitação:\n\n---\n`;
             body += `Empresa: ${selectedCompany}\n`;
 
             const formData = new FormData(modalForm);
@@ -398,8 +397,8 @@
                  else body += `\n${name}: ${value}`;
             }
           
-            body += `\n\nEstou ciente que devo enviar em anexo as evidências (arquivos, prints ou vídeo) da minha solicitação. Caso não as tenha disponibilizado, poderá gerar um retorno para solicitá-las, sendo assim o chamado não será tão rapidamente como o esperado.`;
-            body += '\n\n\n\nAtenciosamente.';
+            body += `\n\nEstou ciente que devo enviar em anexo as evidências (arquivos, prints ou vídeo) da minha solicitação. Caso não as tenha disponibilizado, poderá gerar um retorno para solicitá-las, atrasando o tempo do chamado.`;
+            body += '\n\n---\n\nAtenciosamente.';
 
             const subject = `Solicitação OPS: ${title}`;
             
@@ -441,7 +440,6 @@
             });
         });
 
-        // Corrigido: Movido os event listeners para fora da função que os cria
         document.getElementById('close-modal-btn').addEventListener('click', closeModal);
         document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
         modal.querySelector('.modal-overlay').addEventListener('click', closeModal);
