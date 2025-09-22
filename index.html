@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Padrão de Abertura de Chamados – OPS | Grupo Ideal Trends</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .modal-overlay {
+        transition: opacity 0.3s ease-in-out;
+    }
+    .modal-panel {
+        transition: all 0.3s ease-in-out;
+    }
+    .form-section-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+    /* Estilo para validação visual de campos obrigatórios */
+    input:invalid, textarea:invalid, select:invalid {
+        border-color: #f87171; /* Cor de borda vermelha pastel */
+        box-shadow: 0 0 0 1px #f87171;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+    
+    <header class="mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h1 class="text-3xl font-bold text-gray-900">Padrão de Abertura de Chamados – OPS</h1>
+        <p class="mt-2 text-gray-600"><strong>Grupo Ideal Trends – Área OPS</strong></p>
+        <div class="mt-4 text-sm text-gray-500 space-y-1">
+          <p><strong>Responsável:</strong> Daniel Batista de Lima – Analista de Planejamento | OPS</p>
+          <p><strong>Versão:</strong> 6.1 – <strong>Última atualização:</strong> 22/09/2025</p>
+          <div id="company-info-display" class="hidden flex items-center justify-between mt-2 pt-2 border-t">
+              <p><strong>Empresa:</strong> <span id="selected-company-text" class="font-semibold text-violet-700"></span></p>
+              <button id="change-company-btn" class="text-sm font-semibold text-violet-600 hover:text-violet-800">Trocar Empresa</button>
+          </div>
+        </div>
+      </div>
+       <p class="mt-4 text-center text-violet-800 bg-violet-50 p-3 rounded-lg border border-violet-200">
+        Escolha o tipo de solicitação abaixo e clique em "Abrir Chamado" para preencher as informações.
+      </p>
+    </header>
+
+    <main class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Tipos de Chamado com Ícones -->
+            <div data-form-type="adicionar-analista" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                    <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 11a1 1 0 100-2h-1v-1a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1z" /></svg>Adicionar Analista</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para inclusão de novos analistas nos sistemas.</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+             <div data-form-type="desativar-usuario" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                    <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>Desativar Usuário</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para remover o acesso de um ex-colaborador.</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+            <div data-form-type="migracao-sensedata" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                     <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 015 3v14a1 1 0 01-1.293.707l-2-1A1 1 0 011 16V4a1 1 0 01.707-.964l2-1zm12.586 0l2 1A1 1 0 0119 4v12a1 1 0 01-.707.964l-2 1A1 1 0 0115 17V3a1 1 0 011.293-.707z" clip-rule="evenodd" /></svg>Migração de Dados</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para migrar dados de clientes entre contas.</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+            <div data-form-type="incoerencia-cadastro" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                    <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.636-1.21 2.27-1.21 2.906 0l4.25 8.101c.42.802-.024 1.801-.905 1.801H4.912c-.88 0-1.326-.999-.905-1.801l4.25-8.101zM10 11a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>Incoerência de Cadastro</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para corrigir status de clientes (ativo/inativo).</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+            <div data-form-type="disparo-blip" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                    <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>Disparo via Blip</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para solicitar envio de campanhas via WhatsApp.</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+            <div data-form-type="correcao-lancamento" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                     <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>Correção de Lançamento</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para ajustar ou remover feedbacks e outros lançamentos.</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+             <div data-form-type="ajuste-relatorio" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                    <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" /></svg>Ajuste em Relatório</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para modificar dashboards ou relatórios.</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+             <div data-form-type="modificacao-contrato" class="ticket-type-card bg-gray-50 p-5 border border-gray-200 rounded-lg flex flex-col justify-between shadow-md hover:shadow-xl hover:border-violet-400 hover:-translate-y-1 transform transition-all duration-300">
+                <div>
+                    <h3 class="font-bold text-violet-800 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2V4a2 2 0 00-2-2H9z" /><path d="M4 12a2 2 0 012-2h10a2 2 0 012 2v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z" /></svg>Modificação de Contrato</h3>
+                    <p class="text-sm text-gray-600 mt-1">Para solicitar alterações em cláusulas de contratos.</p>
+                </div>
+                <button class="open-modal-btn mt-4 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Abrir Chamado</button>
+            </div>
+        </div>
+    </main>
+  </div>
+  
+  <!-- Company Selection Modal -->
+  <div id="company-modal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-overlay fixed inset-0 bg-gray-700 bg-opacity-80 transition-opacity opacity-0"></div>
+    <div class="modal-panel relative bg-white rounded-lg shadow-xl w-full max-w-md p-6 transition-all opacity-0 scale-95">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Selecione sua Empresa</h3>
+        <div id="company-list" class="space-y-2">
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="Doutores da Web" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">Doutores da Web</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="Busca Cliente" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">Busca Cliente</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="Ideal Marketing" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">Ideal Marketing</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="Ideal Marketing Blog" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">Ideal Marketing Blog</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="Soluções Industriais" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">Soluções Industriais</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="IBS" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">IBS</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="MPI Solutions" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">MPI Solutions</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="Grupo Ideal" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">Grupo Ideal</span></label>
+            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="radio" name="company" value="Outra" class="h-4 w-4 text-violet-600 focus:ring-violet-500 border-gray-300"><span class="ml-3 text-gray-700">Outra</span></label>
+        </div>
+        <div id="other-company-container" class="mt-4 hidden">
+            <label for="other-company-input" class="block text-sm font-medium text-gray-700">Qual empresa?</label>
+            <input type="text" id="other-company-input" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+        </div>
+        <button id="confirm-company-btn" class="mt-6 w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-violet-700 transition-colors">Confirmar</button>
+    </div>
+</div>
+
+
+  <!-- Form Modal -->
+  <div id="form-modal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="modal-overlay fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity opacity-0"></div>
+    <div class="flex min-h-full items-center justify-center p-4 text-center">
+      <div id="modal-panel" class="modal-panel relative flex flex-col transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all opacity-0 scale-95 sm:my-8 sm:w-full sm:max-w-2xl">
+        <div class="bg-white px-4 pt-5 sm:p-6 sm:pt-6 pb-0">
+          <div class="flex justify-between items-start">
+            <h3 class="text-2xl font-semibold leading-6 text-gray-900" id="modal-title"></h3>
+            <button id="close-modal-btn" type="button" class="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none">
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </div>
+        <div class="bg-white px-4 sm:px-6 mt-4 overflow-y-auto" style="max-height: calc(100vh - 15rem);">
+          <form id="modal-form" class="space-y-4 py-4">
+            <!-- Form content will be injected here -->
+          </form>
+        </div>
+        <div id="modal-footer" class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-gray-200">
+             <button id="cancel-modal-btn" type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                Cancelar
+             </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let selectedCompany = null;
+        let pendingFormType = null;
+        
+        const companyModal = document.getElementById('company-modal');
+        const confirmCompanyBtn = document.getElementById('confirm-company-btn');
+        const companyRadios = document.querySelectorAll('input[name="company"]');
+        const otherCompanyContainer = document.getElementById('other-company-container');
+        const otherCompanyInput = document.getElementById('other-company-input');
+        const companyInfoDisplay = document.getElementById('company-info-display');
+        const selectedCompanyText = document.getElementById('selected-company-text');
+        const changeCompanyBtn = document.getElementById('change-company-btn');
+
+        const modal = document.getElementById('form-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalForm = document.getElementById('modal-form');
+        const modalFooter = document.getElementById('modal-footer');
+        const openModalButtons = document.querySelectorAll('.open-modal-btn');
+        
+        // --- LÓGICA DA EMPRESA ---
+
+        function setCompany(company) {
+            selectedCompany = company;
+            selectedCompanyText.textContent = company;
+            companyInfoDisplay.classList.remove('hidden');
+            closeCompanyModal();
+        }
+        
+        function openCompanyModal() {
+            companyModal.classList.remove('hidden');
+            setTimeout(() => {
+                companyModal.querySelector('.modal-overlay').classList.replace('opacity-0', 'opacity-100');
+                companyModal.querySelector('.modal-panel').classList.replace('opacity-0', 'opacity-100');
+                companyModal.querySelector('.modal-panel').classList.replace('scale-95', 'scale-100');
+            }, 10);
+        }
+
+        function closeCompanyModal() {
+            const overlay = companyModal.querySelector('.modal-overlay');
+            const panel = companyModal.querySelector('.modal-panel');
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            panel.classList.replace('opacity-100', 'opacity-0');
+            panel.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => companyModal.classList.add('hidden'), 300);
+        }
+
+        changeCompanyBtn.addEventListener('click', () => {
+            selectedCompany = null;
+            companyInfoDisplay.classList.add('hidden');
+            openCompanyModal();
+        });
+
+        companyRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                otherCompanyContainer.classList.toggle('hidden', radio.value !== 'Outra');
+            });
+        });
+
+        confirmCompanyBtn.addEventListener('click', () => {
+            const selectedRadio = document.querySelector('input[name="company"]:checked');
+            if (!selectedRadio) {
+                alert('Por favor, selecione uma empresa.');
+                return;
+            }
+
+            let company = selectedRadio.value;
+            if (company === 'Outra') {
+                if (!otherCompanyInput.value.trim()) {
+                    alert('Por favor, informe o nome da empresa.');
+                    return;
+                }
+                company = otherCompanyInput.value.trim();
+            }
+            setCompany(company);
+
+            if (pendingFormType) {
+                openModal(pendingFormType);
+                pendingFormType = null;
+            }
+        });
+
+        // --- LÓGICA DOS FORMULÁRIOS ---
+
+        const formStructures = {
+            'adicionar-analista': {
+                title: 'Adicionar Analista de CS',
+                fields: `<div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Nome completo do analista *</label><input name="Nome completo do analista" type="text" placeholder="Ex.: João da Silva" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">E-mail corporativo *</label><input name="E-mail corporativo" type="email" placeholder="Ex.: joao.silva@idealtrends.com" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">Nome do líder responsável *</label><input name="Nome do líder responsável" type="text" placeholder="Ex.: Maria Souza" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">E-mail do líder responsável *</label><input name="E-mail do líder responsável" type="email" placeholder="Ex.: maria.souza@idealtrends.com" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div></div>`
+            },
+            'desativar-usuario': {
+                title: 'Desativar Usuário',
+                fields: `<div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Nome completo do usuário *</label><input name="Nome completo do usuário" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">E-mail corporativo *</label><input name="E-mail corporativo" type="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">Líder direto *</label><input name="Líder direto" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">Área *</label><input name="Área" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div></div><div><label class="block text-sm font-medium text-gray-700">Desativar perfil nas plataformas *</label><div class="mt-2 space-y-2"><label class="flex items-center"><input type="checkbox" name="Plataformas" value="SenseData" class="h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-600"> <span class="ml-2 text-sm">SenseData</span></label><label class="flex items-center"><input type="checkbox" name="Plataformas" value="Salesforce" class="h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-600"> <span class="ml-2 text-sm">Salesforce</span></label><label class="flex items-center"><input type="checkbox" name="Plataformas" value="Blip" class="h-4 w-4 rounded border-gray-300 text-violet-600 focus:ring-violet-600"> <span class="ml-2 text-sm">Blip</span></label></div></div><div><label class="block text-sm font-medium text-gray-700">Links de Typeforms/Planilhas (opcional)</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Links relevantes" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Cole um link ou ID aqui"></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link</button></div>`
+            },
+            'migracao-sensedata': {
+                title: 'Migração de Dados (SenseData)',
+                fields: `<div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Nome do Cliente *</label><input name="Cliente" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">ID Original (Antigo) *</label><input name="ID Original" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">ID Destino (Novo) *</label><input name="ID Destino" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div></div>`
+            },
+             'incoerencia-cadastro': {
+                title: 'Incoerência de Cadastro',
+                fields: `<div><label class="block text-sm font-medium text-gray-700">Nome do Cliente *</label><input name="Cliente" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">ID do Cliente *</label><input name="ID Cliente" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">Descrição da Incoerência *</label><textarea name="Descrição da Incoerência" rows="3" placeholder="Ex: Cliente está ativo no SenseData mas foi cancelado em Dez/2024" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></textarea></div>`
+            },
+            'disparo-blip': {
+                title: 'Disparo via Blip – WhatsApp',
+                fields: `<div><label class="block text-sm font-medium text-gray-700">Fraseologia (texto da mensagem) *</label><textarea name="Fraseologia" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></textarea></div><div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Texto Botão 1</label><input name="Botão 1" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"></div><div><label class="block text-sm font-medium text-gray-700">Texto Botão 2</label><input name="Botão 2" value="Pagamento Realizado" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"></div></div><div><label class="block text-sm font-medium text-gray-700">Links da Base de Clientes *</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Link da Base" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Link da planilha ou base" required></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link da Base</button></div>`
+            },
+             'correcao-lancamento': {
+                title: 'Correção de Lançamento',
+                fields: `<div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Data do Lançamento *</label><input name="Data do Lançamento" type="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">Data de Reunião Informada</label><input name="Data de Reunião Informada" type="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"></div><div><label class="block text-sm font-medium text-gray-700">Analista que lançou *</label><input name="Analista que lançou" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div></div><div class="form-section-grid"><div><label class="block text-sm font-medium text-gray-700">Links do Typeform *</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Link do Typeform" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Link ou ID do Typeform" required></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link</button></div><div><label class="block text-sm font-medium text-gray-700">Links da Planilha *</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Link da Planilha" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Link ou nome da Planilha" required></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link</button></div></div><div><label class="block text-sm font-medium text-gray-700">Descrição da Correção *</label><textarea name="Descrição da Correção" rows="3" placeholder="Ex: Excluir feedback duplicado, corrigir informação..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></textarea></div>`
+            },
+            'ajuste-relatorio': {
+                title: 'Ajuste em Indicador/Relatório',
+                fields: `<div><label class="block text-sm font-medium text-gray-700">Nome do indicador ou dashboard *</label><input name="Nome do indicador ou dashboard" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div><div><label class="block text-sm font-medium text-gray-700">Links do indicador/planilha *</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Link do indicador" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" required></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link</button></div>`
+            },
+            'modificacao-contrato': {
+                title: 'Modificação de Contrato',
+                fields: `<div><label class="block text-sm font-medium text-gray-700">Links dos Contratos *</label><div class="link-inputs-container mt-1"><div class="flex items-center space-x-2"><input name="Links dos Contratos" type="text" class="block w-full border-gray-300 rounded-md shadow-sm p-2" placeholder="Link ou ID do Contrato" required></div></div><button type="button" class="add-link-btn mt-2 text-sm text-violet-600 font-semibold hover:text-violet-800">+ Adicionar Link</button></div><div><label class="block text-sm font-medium text-gray-700">Empresas *</label><input name="Empresas" type="text" placeholder="Liste as empresas relacionadas" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></div>`
+            }
+        };
+
+        const universalFields = `<div class="pt-4 mt-4 border-t border-gray-200"><label class="block text-sm font-medium text-gray-700">Detalhes da Solicitação *</label><textarea name="Detalhes da Solicitação" rows="4" placeholder="Forneça aqui todos os detalhes e o contexto necessário." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></textarea></div><div class="pt-4 mt-4 border-t border-gray-200"><div class="text-sm text-blue-800 bg-blue-50 p-4 rounded-md border border-blue-200"><h4 class="font-bold mb-1">Anexos e Evidências</h4><p><strong>Importante:</strong> Todos os arquivos, prints e outras evidências deverão ser <strong>anexados ou colados diretamente no corpo do e-mail</strong> que será aberto.</p></div></div>`;
+
+        function openModal(formType) {
+            const structure = formStructures[formType];
+            if (!structure) return;
+
+            const existingSuccessBtn = modalFooter.querySelector('#close-generated-btn');
+            if (existingSuccessBtn) existingSuccessBtn.remove();
+            modalFooter.querySelector('#cancel-modal-btn').style.display = 'inline-flex';
+            
+            modalTitle.textContent = structure.title;
+            modalForm.innerHTML = structure.fields + universalFields;
+            
+            const existingButtons = modalFooter.querySelectorAll('.action-btn');
+            existingButtons.forEach(btn => btn.remove());
+
+            const outlookBtn = document.createElement('button');
+            outlookBtn.dataset.client = 'outlook';
+            outlookBtn.className = 'action-btn inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto';
+            outlookBtn.innerHTML = `<svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px"><path fill="#29b6f6" d="M24,37.1c-6.2,0-11.2,4.6-11.2,10.2c0,0.4,0.4,0.7,0.7,0.7h20.9c0.4,0,0.7-0.4,0.7-0.7 C35.2,41.7,30.2,37.1,24,37.1z"/><path fill="#29b6f6" d="M42.9,15.2v17.7c0,3.8-3.1,6.9-6.9,6.9H12c-3.8,0-6.9-3.1-6.9-6.9V15.2c0-2.3,1-4.4,2.7-5.8 l17.5,10.1l17-10.1C41.9,10.8,42.9,12.9,42.9,15.2z"/><path fill="#01579b" d="M12,5.1H5.1v10.1C5.1,15.2,12,8.2,12,5.1z"/><path fill="#01579b" d="M36,5.1h6.9v10.1C42.9,15.2,36,8.2,36,5.1z"/><path fill="#1976d2" d="M12,5.1c0,3.1,6.9,10.1,6.9,10.1l4.4-2.5l-10.6-6.1C12.3,6.3,12,5.7,12,5.1z"/><path fill="#1976d2" d="M36,5.1c0,0.6-0.3,1.2-0.7,1.5l-10.6,6.1l4.4,2.5c0,0,6.9-7,6.9-10.1z"/></svg>Abrir no Outlook (Web)`;
+
+            const gmailBtn = document.createElement('button');
+            gmailBtn.dataset.client = 'gmail';
+            gmailBtn.className = 'action-btn mt-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto';
+            gmailBtn.innerHTML = `<svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 48 48" width="48px" height="48px"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.03 13.95 17.54 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.47 0-11.97-4.4-13.96-10.19l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>Abrir no Gmail`;
+
+            modalFooter.prepend(gmailBtn);
+            modalFooter.prepend(outlookBtn);
+
+            modalForm.querySelectorAll('.add-link-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const container = button.previousElementSibling;
+                    if (container && container.classList.contains('link-inputs-container') && container.children.length < 10) {
+                        const firstInput = container.querySelector('input');
+                        const newDiv = document.createElement('div');
+                        newDiv.className = 'flex items-center space-x-2 mt-2';
+                        const newInput = document.createElement('input');
+                        newInput.name = firstInput.name;
+                        newInput.type = "text";
+                        newInput.className = "block w-full border-gray-300 rounded-md shadow-sm p-2";
+                        newInput.placeholder = firstInput.placeholder;
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'text-red-500 hover:text-red-700 p-1';
+                        removeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>';
+                        removeBtn.onclick = () => { newDiv.remove(); button.style.display = 'inline-block'; };
+                        newDiv.appendChild(newInput);
+                        newDiv.appendChild(removeBtn);
+                        container.appendChild(newDiv);
+                        if (container.children.length >= 10) button.style.display = 'none';
+                    }
+                });
+            });
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.modal-overlay').classList.replace('opacity-0', 'opacity-100');
+                modal.querySelector('.modal-panel').classList.replace('opacity-0', 'opacity-100');
+                modal.querySelector('.modal-panel').classList.replace('scale-95', 'scale-100');
+                // Auto-focus no primeiro campo
+                modalForm.querySelector('input, textarea, select')?.focus();
+            }, 10);
+        }
+
+        function closeModal() {
+            const overlay = modal.querySelector('.modal-overlay');
+            const panel = modal.querySelector('.modal-panel');
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            panel.classList.replace('opacity-100', 'opacity-0');
+            panel.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modalForm.innerHTML = '';
+            }, 300);
+        }
+        
+        function handleEmailGeneration(e) {
+            const clickedButton = e.target.closest('.action-btn');
+            if (!clickedButton) return;
+
+            if (!modalForm.checkValidity()) {
+                modalForm.reportValidity();
+                return;
+            }
+            
+            const client = clickedButton.dataset.client;
+            const title = modalTitle.textContent;
+            const emailTo = 'ops@idealtrends.atlassian.net';
+            
+            let body = `Olá, equipe OPS.\n\nPor favor, seguir com a seguinte solicitação:\n\n\n`;
+            body += `Empresa: ${selectedCompany}\n`;
+
+            const formData = new FormData(modalForm);
+            const groupedData = {};
+            for (let [name, value] of formData.entries()) {
+                if (value.trim()) {
+                    if (groupedData[name]) {
+                        if (!Array.isArray(groupedData[name])) groupedData[name] = [groupedData[name]];
+                        groupedData[name].push(value);
+                    } else {
+                        groupedData[name] = value;
+                    }
+                }
+            }
+            
+            for(const name in groupedData) {
+                const value = groupedData[name];
+                 if (Array.isArray(value)) body += `\n${name}:\n- ${value.join('\n- ')}`;
+                 else body += `\n${name}: ${value}`;
+            }
+          
+            body += `\n\nEstou ciente que devo enviar em anexo as evidências (arquivos, prints ou vídeo) da minha solicitação. Caso não as tenha disponibilizado, poderá gerar um retorno para solicitá-las, sendo assim o chamado não será tão rapidamente como o esperado.`;
+            body += '\n\n\n\nAtenciosamente.';
+
+            const subject = `Solicitação OPS: ${title}`;
+            
+            if (client === 'gmail') {
+                const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailTo)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.open(url, '_blank');
+            } else if (client === 'outlook') {
+                const draftPageHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Rascunho do E-mail para OPS</title><script src="https://cdn.tailwindcss.com"><\/script><style>body{font-family:'Inter',sans-serif}</style></head><body class="bg-gray-100 p-4 md:p-8"><div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-lg"><div class="flex justify-between items-center"><h1 class="text-xl md:text-2xl font-bold text-gray-800">Rascunho do E-mail</h1><a href="https://outlook.office.com/mail/" target="_blank" class="inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Abrir Outlook</a></div><p class="text-gray-600 mt-2">Copie os campos abaixo e cole em um novo e-mail no Outlook.</p><div class="mt-6 border-t pt-6 space-y-4"><div><div class="flex justify-between items-center mb-1"><label class="block text-sm font-medium text-gray-500">Assunto:</label><button onclick="copyToClipboard('subject-content', this)" class="copy-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-300">Copiar</button></div><pre id="subject-content" class="text-base text-gray-900 p-3 bg-gray-50 rounded whitespace-pre-wrap font-sans">${subject}</pre></div><div><div class="flex justify-between items-center mb-1"><label class="block text-sm font-medium text-gray-500">Corpo do E-mail:</label><button onclick="copyToClipboard('body-content', this)" class="copy-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-300">Copiar</button></div><pre id="body-content" class="text-base text-gray-900 p-3 bg-gray-50 rounded mt-1 whitespace-pre-wrap font-sans h-64 overflow-y-auto">${body}</pre></div></div></div><script>function copyToClipboard(elementId, button){const textToCopy=document.getElementById(elementId).innerText;try{navigator.clipboard.writeText(textToCopy).then(()=>{button.innerText='Copiado!';setTimeout(()=>{button.innerText='Copiar'},2e3)})}catch(err){const textarea=document.createElement('textarea');textarea.value=textToCopy,document.body.appendChild(textarea),textarea.select(),document.execCommand('copy'),document.body.removeChild(textarea),button.innerText='Copiado!',setTimeout(()=>{button.innerText='Copiar'},2e3)}}<\/script></body></html>`;
+                const newWindow = window.open('', '_blank');
+                newWindow.document.write(draftPageHtml);
+                newWindow.document.close();
+            }
+
+            clickedButton.innerHTML = `<svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>Gerado (${client === 'gmail' ? 'Gmail' : 'Outlook'})`;
+            clickedButton.disabled = true;
+            clickedButton.classList.remove('bg-blue-600', 'bg-red-600', 'hover:bg-blue-700', 'hover:bg-red-700');
+            clickedButton.classList.add('bg-green-600', 'cursor-not-allowed');
+
+            if (!modalFooter.querySelector('#close-generated-btn')) {
+                const closeGeneratedButton = document.createElement('button');
+                closeGeneratedButton.id = 'close-generated-btn';
+                closeGeneratedButton.type = 'button';
+                closeGeneratedButton.className = 'mt-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-gray-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 sm:ml-3 sm:w-auto';
+                closeGeneratedButton.textContent = 'Fechar';
+                closeGeneratedButton.addEventListener('click', closeModal);
+                modalFooter.appendChild(closeGeneratedButton);
+            }
+        }
+
+        openModalButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                pendingFormType = button.closest('.ticket-type-card').dataset.formType;
+                if (!selectedCompany) {
+                    openCompanyModal();
+                } else {
+                    openModal(pendingFormType);
+                    pendingFormType = null;
+                }
+            });
+        });
+
+        // Corrigido: Movido os event listeners para fora da função que os cria
+        document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+        document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+        modal.querySelector('.modal-overlay').addEventListener('click', closeModal);
+        companyModal.querySelector('.modal-overlay').addEventListener('click', closeCompanyModal);
+
+        modalFooter.addEventListener('click', handleEmailGeneration);
+    });
+  </script>
+
+</body>
+</html>
+
