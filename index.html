@@ -1,471 +1,342 @@
-import React, { useState } from 'react';
-import { 
-  BookOpen, 
-  Clock, 
-  Copy, 
-  ExternalLink, 
-  FileText, 
-  MessageSquare, 
-  Database, 
-  UserPlus, 
-  Settings, 
-  AlertCircle,
-  BarChart,
-  CheckCircle2,
-  Sliders,
-  FileSpreadsheet,
-  Building,
-  Lightbulb,
-  HelpCircle,
-  Info
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal OPS - Grupo Ideal Trends</title>
+    
+    <!-- Tailwind CSS para o Visual -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React e ReactDOM (O Motor) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel (O Tradutor do Código) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-// --- DADOS EXTRAÍDOS DO DOCUMENTO ---
-const GLPI_LINK = "https://idealtrends.us1.glpi-network.cloud/index.php?noAUTO=1";
+    <!-- Lucide Icons (Ícones via CDN estático) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-const generalRules = {
-  slas: [
-    { title: "Primeira Resposta", time: "2 dias", desc: "Após a abertura para análise e primeiro retorno." },
-    { title: "Resolução Padrão", time: "5 dias", desc: "Para chamados gerais (após primeira resposta)." },
-    { title: "Cobrança de Retorno", time: "2 dias", desc: "Para o solicitante responder. Pode gerar encerramento." }
-  ],
-  dashboardSlas: {
-    powerbi: [
-      { level: "Simples", time: "Até 5 dias úteis" },
-      { level: "Médio", time: "Até 8 dias úteis" },
-      { level: "Alto", time: "Até 10 dias úteis" },
-      { level: "Altíssimo", time: "Até 20 dias úteis" }
-    ],
-    salesforce: [
-      { level: "Simples", time: "Até 3 dias úteis" },
-      { level: "Médio", time: "Até 5 dias úteis" },
-      { level: "Alto", time: "Até 7 dias úteis" },
-      { level: "Altíssimo", time: "Até 15 dias úteis" }
-    ]
-  }
-};
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 20px; }
+        body { background-color: #F4F7FE; }
+    </style>
+</head>
+<body>
+    <!-- Aqui é onde o App vai nascer -->
+    <div id="root"></div>
 
-const categories = [
-  {
-    id: 'acesso',
-    icon: <UserPlus size={20} />,
-    title: 'Acesso ao Salesforce',
-    description: 'Solicitação de criação de novos perfis no Salesforce para colaboradores.',
-    rules: ['É obrigatório enviar Nome Completo, Departamento, Empresa e E-mail corporativo.'],
-    templateTitle: 'OPS - Cadastro de Analista - Salesforce - [Nome do Colaborador]',
-    template: `Olá, equipe OPS. Solicito a criação de acesso ao Salesforce para o novo colaborador abaixo:
+    <script type="text/babel">
+        // Componentes de Ícones manuais (SVG) para evitar problemas de importação no navegador puro
+        const IconUserPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>;
+        const IconFileText = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>;
+        const IconMessage = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+        const IconChart = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
+        const IconDatabase = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>;
+        const IconSliders = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>;
+        const IconSpreadsheet = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>;
+        const IconBuilding = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>;
+        const IconLightbulb = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>;
+        const IconHelp = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
+        const IconSettings = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
+        const IconExternalLink = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
+        const IconBookOpen = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+        const IconAlert = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+        const IconClock = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+        const IconInfo = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>;
+        const IconCopy = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>;
+        const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
 
-Nome Completo: [Inserir nome]
-Departamento: [Inserir departamento]
-Empresa: [Inserir empresa]
-E-mail: [Inserir e-mail]`
-  },
-  {
-    id: 'typeform',
-    icon: <FileText size={20} />,
-    title: 'Ajustes em Typeform',
-    description: 'Alterações, inclusões ou exclusões de campos em formulários Typeform existentes.',
-    rules: [
-      'É obrigatório inserir o link do Typeform.',
-      'É obrigatório inserir o link da planilha de destino que este formulário alimenta.'
-    ],
-    templateTitle: 'OPS - Typeform - Inclusão de novo campo no formulário [Nome do formulário]',
-    template: `Olá, equipe OPS. Precisamos de uma alteração no formulário atual.
+        const { useState } = React;
 
-Link do Typeform: [Inserir link do form]
-Link da Planilha alimentada: [Inserir link da planilha]
-Ajuste necessário: [Descrever detalhadamente o que precisa ser alterado, incluído ou excluído, ex: adicionar o analista João na lista suspensa de responsáveis].`
-  },
-  {
-    id: 'blip',
-    icon: <MessageSquare size={20} />,
-    title: 'Disparos no Blip',
-    description: 'Solicitação de disparos em massa ou segmentados através da plataforma Blip.',
-    rules: [
-      'Obrigatório informar quais são as classificações, tags ou filtros exatos para segmentar os clientes.',
-      'Apenas gestores devem abrir este tipo de chamado.'
-    ],
-    templateTitle: 'OPS - Blip - Disparo de Mensagem para [Público/Campanha]',
-    template: `Olá, equipe OPS. Solicito o apoio para um disparo via Blip.
+        const GLPI_LINK = "https://idealtrends.us1.glpi-network.cloud/index.php?noAUTO=1";
 
-Mensagem/Template a ser enviado: [Inserir o texto ou nome do template aprovado]
-Filtros a serem aplicados na base: [Ex: Clientes da empresa X, com status de Onboarding, que entraram no mês de Março]
-Data limite para o disparo: [Inserir data]`
-  },
-  {
-    id: 'dashboards',
-    icon: <BarChart size={20} />,
-    title: 'Painéis PowerBI ou SF',
-    description: 'Construção ou ajuste de Dashboards e Relatórios complexos.',
-    rules: [
-      'Descreva claramente o objetivo e as métricas.',
-      'Os prazos de entrega variam conforme a complexidade e começam a contar APÓS a primeira resposta do OPS.'
-    ],
-    templateTitle: 'OPS - Painéis [PowerBI ou Salesforce] - Criação de Visão de [Nome da métrica]',
-    template: `Olá, equipe OPS. Solicito a criação de um novo relatório/dashboard.
-
-Objetivo do Painel: [O que você quer analisar? Ex: Acompanhar o volume de chamados por analista].
-Origem dos Dados: [De onde vêm os dados? Ex: Salesforce, Planilha X].
-Métricas Necessárias: [Ex: Total de casos, Casos abertos, SLA médio]. 
-
-Estou ciente de que o prazo de entrega será classificado pelo OPS (Simples a Altíssimo) após a primeira análise.`
-  },
-  {
-    id: 'carteiras',
-    icon: <Database size={20} />,
-    title: 'Indicadores e Carteiras',
-    description: 'Regras sobre Churn e Atribuição de Carteiras.',
-    rules: [
-      'CHURN: O prazo máximo de execução pelo OPS ocorre impreterivelmente até o 5º dia útil do mês. Não abra chamados antes desse prazo para este fim.',
-      'CARTEIRAS: A atribuição é responsabilidade exclusiva da gestão. O OPS atua apenas como suporte em casos de falha na organização mensal. O chamado deve ser aberto pelo Gestor responsável.'
-    ],
-    isInformational: true
-  },
-  {
-    id: 'ajustes_diversos',
-    icon: <Sliders size={20} />,
-    title: 'Ajustes Diversos',
-    description: 'Para ajustes gerais do dia a dia em planilhas, fluxos de processos ou alteração de dados.',
-    rules: [
-      'Especifique claramente onde o ajuste deve ser feito (inclua links, se for planilha).',
-      'Detalhe o cenário atual e o cenário esperado após o ajuste.'
-    ],
-    templateTitle: 'OPS - [Ajustes Planilha / Fluxos / Dados] - [Breve resumo]',
-    template: `Olá, equipe OPS.\n\nSolicito o seguinte ajuste:\n\nTipo de Ajuste: [Planilha / Fluxos / Dado no sistema / Alteração cadastral]\nLink/Localização: [Inserir link da planilha ou onde o dado se encontra]\nO que está acontecendo: [Descrever o cenário atual]\nO que precisa ser feito: [Descrever o resultado esperado]`
-  },
-  {
-    id: 'relatorios',
-    icon: <FileSpreadsheet size={20} />,
-    title: 'Relatórios e Extração',
-    description: 'Solicitações de relatórios ad-hoc ou extração de base de dados.',
-    rules: [
-      'Descreva a finalidade da extração para que a equipe valide a melhor forma de puxar os dados.',
-      'Informe os filtros (período, status, empresa) e as colunas necessárias.'
-    ],
-    templateTitle: 'OPS - Relatórios - [Nome do Relatório/Extração]',
-    template: `Olá, equipe OPS.\n\nSolicito a extração de dados ou criação de um relatório simples.\n\nObjetivo: [Qual a finalidade deste dado?]\nFiltros necessários: [Ex: Período do último mês, apenas Clientes Ativos]\nCampos necessários: [Quais colunas/dados precisam vir no relatório?]`
-  },
-  {
-    id: 'contratos_empresas',
-    icon: <Building size={20} />,
-    title: 'Contratos (Signow)',
-    description: 'Demandas relacionadas à inclusão de contratos no Signow e novas empresas.',
-    rules: [
-      'Forneça sempre o nome exato da empresa ou identificador do contrato.',
-      'SIGNOW: A criação de novos contratos na plataforma tem prazo de até 2 dias úteis após a primeira resposta.',
-      'SIGNOW: É obrigatório o envio do documento "Template do contrato".',
-      'SIGNOW: É obrigatório o envio da aprovação do jurídico (se houver).'
-    ],
-    templateTitle: 'OPS - [Contratos Signow / Novas empresas] - [Nome da Empresa/Contrato]',
-    template: `Olá, equipe OPS.
-
-Solicito apoio com [cadastro de contrato no Signow / ajuste de contrato / nova empresa].
-
-Empresa: [Nome da empresa]
-Identificador/CNPJ: [Se aplicável]
-Solicitação: [Descrever detalhadamente o que precisa ser feito no sistema]
-
-[Preencher apenas para chamados de Signow]
-Template do contrato: [Informar que está anexado no chamado ou colocar o link]
-Aprovação do Jurídico: [Informar que o print/e-mail de aprovação está anexado, ou preencher com "Não se aplica"]`
-  },
-  {
-    id: 'alinhamento_melhoria',
-    icon: <Lightbulb size={20} />,
-    title: 'Alinhamento/Melhoria',
-    description: 'Para propor melhorias operacionais ou solicitar agendas de alinhamento com a equipe.',
-    rules: [
-      'Se for melhoria, descreva o impacto esperado na operação.',
-      'Se for alinhamento, já envie a pauta do que será discutido para prepararmos os dados.'
-    ],
-    templateTitle: 'OPS - [Alinhamento / Melhoria operacional] - [Assunto da Pauta]',
-    template: `Olá, equipe OPS.\n\n[Gostaria de propor uma melhoria OU solicitar um alinhamento].\n\nProcesso atual / Pauta: [Como funciona hoje ou o que precisa ser discutido]\nProposta de Melhoria: [O que podemos mudar]\nImpacto esperado: [Como isso vai otimizar a operação]`
-  },
-  {
-    id: 'outros',
-    icon: <HelpCircle size={20} />,
-    title: 'Outros Chamados',
-    description: 'Para qualquer demanda que não se encaixe em nenhuma das categorias padrão.',
-    rules: [
-      'Seja o mais claro e detalhista possível na descrição.',
-      'Sempre que houver, inclua links, prints ou nomes de sistemas envolvidos para facilitar a triagem.'
-    ],
-    templateTitle: 'OPS - Outros - [Resumo do Assunto]',
-    template: `Olá, equipe OPS.\n\nTenho uma solicitação que não se enquadra nas categorias padrão.\n\nDescrição detalhada da necessidade: [Descreva passo a passo o que você precisa]\nSistemas ou Links envolvidos: [Ex: Salesforce, Planilha X, etc.]`
-  }
-];
-
-export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
-  const [copiedText, setCopiedText] = useState(false);
-
-  const handleCopy = (text, title) => {
-    const fullText = `Título: ${title}\n\nDescrição:\n${text}`;
-    navigator.clipboard.writeText(fullText).then(() => {
-      setCopiedText(true);
-      setTimeout(() => setCopiedText(false), 2000);
-    });
-  };
-
-  const renderHome = () => (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      
-      {/* Welcome Banner - Modern Dribbble Style */}
-      <div className="bg-white p-8 rounded-3xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-50 rounded-full opacity-50 pointer-events-none"></div>
-        <div className="relative z-10">
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Guia de Atendimento OPS</h2>
-          <p className="text-gray-500 text-lg mb-6 max-w-2xl leading-relaxed">
-            Portal oficial de diretrizes para gestores do <strong>Grupo Ideal Trends</strong>. 
-            Selecione uma categoria ao lado para acessar os templates e garantir um atendimento ágil.
-          </p>
-          <div className="inline-flex items-center text-sm font-medium text-amber-700 bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
-            <AlertCircle size={18} className="mr-2 text-amber-500" />
-            Demandas via chat ou presenciais sem registro no GLPI não serão tratadas.
-          </div>
-        </div>
-      </div>
-
-      {/* SLA Cards - Grid */}
-      <div>
-        <div className="flex items-center mb-5">
-          <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mr-3">
-            <Clock size={20} className="text-blue-600" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900">Prazos Gerais (SLA)</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {generalRules.slas.map((sla, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-2xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0px_8px_30px_rgba(0,0,0,0.04)] transition-all duration-300 border border-gray-50 group">
-              <div className="flex justify-between items-start mb-4">
-                <h4 className="font-semibold text-gray-500 text-sm uppercase tracking-wider">{sla.title}</h4>
-              </div>
-              <div className="flex items-baseline space-x-2 mb-3">
-                <p className="text-4xl font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors">{sla.time.split(' ')[0]}</p>
-                <p className="text-lg font-bold text-gray-400">{sla.time.split(' ').slice(1).join(' ')}</p>
-              </div>
-              <p className="text-sm text-gray-500 font-medium leading-relaxed">{sla.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Specific SLAs - Dashboards */}
-      <div className="bg-white rounded-3xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] p-8 border border-gray-50">
-        <div className="flex items-center mb-6">
-          <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center mr-3">
-            <BarChart size={20} className="text-indigo-600" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-gray-900">Prazos de Dashboards</h3>
-            <p className="text-sm text-gray-500 font-medium mt-1">Início da contagem após a primeira resposta da equipe OPS.</p>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-gray-50 rounded-2xl p-6">
-            <h4 className="font-bold text-gray-900 mb-4 flex items-center">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span> PowerBI
-            </h4>
-            <ul className="space-y-3">
-              {generalRules.dashboardSlas.powerbi.map((sla, idx) => (
-                <li key={idx} className="flex justify-between items-center bg-white px-4 py-3 rounded-xl shadow-sm">
-                  <span className="font-medium text-gray-600">{sla.level}</span>
-                  <span className="text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-lg text-sm">{sla.time}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="bg-gray-50 rounded-2xl p-6">
-            <h4 className="font-bold text-gray-900 mb-4 flex items-center">
-              <span className="w-2 h-2 rounded-full bg-blue-500 mr-2"></span> Salesforce
-            </h4>
-            <ul className="space-y-3">
-              {generalRules.dashboardSlas.salesforce.map((sla, idx) => (
-                <li key={idx} className="flex justify-between items-center bg-white px-4 py-3 rounded-xl shadow-sm">
-                  <span className="font-medium text-gray-600">{sla.level}</span>
-                  <span className="text-blue-700 font-bold bg-blue-50 px-3 py-1 rounded-lg text-sm">{sla.time}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderCategory = (category) => (
-    <div className="animate-in fade-in duration-300">
-      
-      {/* Header of Category */}
-      <div className="bg-white rounded-3xl p-8 mb-6 shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-gray-50 flex items-start space-x-5">
-        <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-          <span className="text-blue-600">{React.cloneElement(category.icon, { size: 32 })}</span>
-        </div>
-        <div>
-          <h2 className="text-2xl font-extrabold text-gray-900 mb-2">{category.title}</h2>
-          <p className="text-gray-500 text-base leading-relaxed">{category.description}</p>
-        </div>
-      </div>
-
-      {/* Rules */}
-      <div className="mb-6">
-        <h4 className="font-bold text-gray-900 mb-3 flex items-center text-lg">
-          <Info size={20} className="mr-2 text-blue-500" /> Requisitos Obrigatórios
-        </h4>
-        <div className="bg-white rounded-2xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-gray-50 overflow-hidden">
-          <ul className="divide-y divide-gray-100">
-            {category.rules.map((rule, idx) => (
-              <li key={idx} className="px-6 py-4 flex items-start">
-                <div className="mt-1 mr-3 w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></div>
-                <span className="text-gray-600 font-medium">{rule}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* Code / Template Area */}
-      {!category.isInformational && (
-        <div>
-          <div className="flex items-center justify-between mb-3 px-1">
-            <h4 className="font-bold text-gray-900 flex items-center text-lg">
-              <FileText size={20} className="mr-2 text-gray-400" /> Template do Chamado
-            </h4>
-            <button 
-              onClick={() => handleCopy(category.template, category.templateTitle)}
-              className="flex items-center text-sm bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl transition-all shadow-md hover:shadow-lg font-medium"
-            >
-              {copiedText ? <CheckCircle2 size={16} className="mr-2" /> : <Copy size={16} className="mr-2" />}
-              {copiedText ? 'Copiado!' : 'Copiar para o GLPI'}
-            </button>
-          </div>
-          
-          <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-xl border border-gray-800">
-            {/* Mac-like header for code block */}
-            <div className="bg-gray-950 px-4 py-3 flex items-center space-x-2 border-b border-gray-800">
-              <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-              <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
-              <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-              <span className="ml-4 text-gray-500 text-xs font-mono tracking-wider">GLPI_TICKET_DRAFT</span>
-            </div>
-            
-            <div className="p-6">
-              <div className="mb-5">
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Título do Chamado</p>
-                <div className="bg-gray-800/50 border border-gray-700/50 text-blue-300 font-mono text-sm p-3 rounded-xl">
-                  {category.templateTitle}
-                </div>
-              </div>
-              <div>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Descrição</p>
-                <div className="bg-gray-800/50 border border-gray-700/50 p-5 rounded-xl">
-                  <pre className="text-gray-300 font-mono text-sm whitespace-pre-wrap leading-loose">
-                    {category.template}
-                  </pre>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-[#F4F7FE] font-sans flex flex-col selection:bg-blue-200 selection:text-blue-900">
-      
-      {/* Top Navigation - Mantido como solicitado */}
-      <header className="bg-blue-900 text-white shadow-md z-20 sticky top-0">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="bg-white p-1.5 rounded-lg shadow-sm">
-              <Settings className="text-blue-900" size={24} />
-            </div>
-            <div>
-              <h1 className="font-bold text-lg leading-tight tracking-wide">Portal OPS</h1>
-              <p className="text-xs text-blue-200 font-medium tracking-wider uppercase">Grupo Ideal Trends</p>
-            </div>
-          </div>
-          <a 
-            href={GLPI_LINK} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:shadow-[0_0_20px_rgba(37,99,235,0.6)]"
-          >
-            Abrir GLPI <ExternalLink size={16} className="ml-2" />
-          </a>
-        </div>
-      </header>
-
-      {/* Main Layout */}
-      <div className="flex-1 max-w-[1440px] mx-auto w-full flex flex-col md:flex-row p-4 md:p-6 gap-6">
-        
-        {/* Sidebar - Dribbble Style */}
-        <aside className="w-full md:w-72 bg-white rounded-3xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] border border-gray-50 flex flex-col overflow-hidden h-fit md:sticky md:top-24">
-          <div className="p-5">
-            <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Visão Geral</p>
-            <button
-              onClick={() => setActiveTab('home')}
-              className={`w-full flex items-center px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-200 ${
-                activeTab === 'home' 
-                  ? 'bg-blue-50 text-blue-700 shadow-sm' 
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-            >
-              <BookOpen size={20} className={`mr-3 ${activeTab === 'home' ? 'text-blue-600' : 'text-gray-400'}`} />
-              Diretrizes e SLAs
-            </button>
-          </div>
-
-          <div className="px-5 pb-5">
-            <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Templates</p>
-            <nav className="space-y-1.5 max-h-[calc(100vh-300px)] overflow-y-auto pr-2 custom-scrollbar">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveTab(cat.id)}
-                  className={`w-full flex items-center px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-200 group ${
-                    activeTab === cat.id 
-                      ? 'bg-blue-50 text-blue-700 shadow-sm' 
-                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <span className={`mr-3 transition-colors ${activeTab === cat.id ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`}>
-                    {React.cloneElement(cat.icon, { size: 20 })}
-                  </span>
-                  <span className="truncate">{cat.title}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-        </aside>
-
-        {/* Content Area */}
-        <main className="flex-1 min-w-0">
-          <div className="max-w-4xl mx-auto">
-            {activeTab === 'home' 
-              ? renderHome() 
-              : renderCategory(categories.find(c => c.id === activeTab))
+        const generalRules = {
+            slas: [
+                { title: "Primeira Resposta", time: "2 dias", desc: "Após a abertura para análise e primeiro retorno." },
+                { title: "Resolução Padrão", time: "5 dias", desc: "Para chamados gerais (após primeira resposta)." },
+                { title: "Cobrança de Retorno", time: "2 dias", desc: "Para o solicitante responder. Pode gerar encerramento." }
+            ],
+            dashboardSlas: {
+                powerbi: [
+                    { level: "Simples", time: "Até 5 dias úteis" },
+                    { level: "Médio", time: "Até 8 dias úteis" },
+                    { level: "Alto", time: "Até 10 dias úteis" },
+                    { level: "Altíssimo", time: "Até 20 dias úteis" }
+                ],
+                salesforce: [
+                    { level: "Simples", time: "Até 3 dias úteis" },
+                    { level: "Médio", time: "Até 5 dias úteis" },
+                    { level: "Alto", time: "Até 7 dias úteis" },
+                    { level: "Altíssimo", time: "Até 15 dias úteis" }
+                ]
             }
-          </div>
-        </main>
-      </div>
-      
-      {/* Estilo para barra de rolagem customizada invisível mas funcional no sidebar */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
+        };
+
+        const categories = [
+            {
+                id: 'acesso', icon: <IconUserPlus />, title: 'Acesso ao Salesforce',
+                description: 'Solicitação de criação de novos perfis no Salesforce para colaboradores.',
+                rules: ['É obrigatório enviar Nome Completo, Departamento, Empresa e E-mail corporativo.'],
+                templateTitle: 'OPS - Cadastro de Analista - Salesforce - [Nome do Colaborador]',
+                template: `Olá, equipe OPS. Solicito a criação de acesso ao Salesforce para o novo colaborador abaixo:\n\nNome Completo: [Inserir nome]\nDepartamento: [Inserir departamento]\nEmpresa: [Inserir empresa]\nE-mail: [Inserir e-mail]`
+            },
+            {
+                id: 'typeform', icon: <IconFileText />, title: 'Ajustes em Typeform',
+                description: 'Alterações, inclusões ou exclusões de campos em formulários Typeform existentes.',
+                rules: ['É obrigatório inserir o link do Typeform.', 'É obrigatório inserir o link da planilha de destino que este formulário alimenta.'],
+                templateTitle: 'OPS - Typeform - Inclusão de novo campo no formulário [Nome do formulário]',
+                template: `Olá, equipe OPS. Precisamos de uma alteração no formulário atual.\n\nLink do Typeform: [Inserir link do form]\nLink da Planilha alimentada: [Inserir link da planilha]\nAjuste necessário: [Descrever o que precisa ser alterado].`
+            },
+            {
+                id: 'blip', icon: <IconMessage />, title: 'Disparos no Blip',
+                description: 'Solicitação de disparos em massa ou segmentados através da plataforma Blip.',
+                rules: ['Obrigatório informar classificações ou filtros exatos.', 'Apenas gestores devem abrir este tipo de chamado.'],
+                templateTitle: 'OPS - Blip - Disparo de Mensagem para [Público/Campanha]',
+                template: `Olá, equipe OPS. Solicito o apoio para um disparo via Blip.\n\nMensagem a ser enviada: [Inserir o texto]\nFiltros a serem aplicados: [Ex: Clientes da empresa X]\nData limite: [Inserir data]`
+            },
+            {
+                id: 'dashboards', icon: <IconChart />, title: 'Painéis PowerBI/SF',
+                description: 'Construção ou ajuste de Dashboards e Relatórios complexos.',
+                rules: ['Descreva claramente o objetivo e as métricas.', 'Prazos variam conforme complexidade.'],
+                templateTitle: 'OPS - Painéis [Sistema] - Criação de Visão de [Métrica]',
+                template: `Olá, equipe OPS. Solicito a criação de um novo relatório.\n\nObjetivo: [O que analisar?]\nOrigem: [De onde vêm os dados?]\nMétricas Necessárias: [Ex: Total de casos].`
+            },
+            {
+                id: 'carteiras', icon: <IconDatabase />, title: 'Indicadores e Carteiras',
+                description: 'Regras sobre Churn e Atribuição de Carteiras.',
+                rules: ['CHURN: Prazo máximo de execução até o 5º dia útil do mês.', 'CARTEIRAS: Atribuição é responsabilidade da gestão.'],
+                isInformational: true
+            },
+            {
+                id: 'ajustes_diversos', icon: <IconSliders />, title: 'Ajustes Diversos',
+                description: 'Para ajustes gerais em planilhas, fluxos de processos ou dados.',
+                rules: ['Especifique claramente onde o ajuste deve ser feito.', 'Detalhe o cenário atual e o esperado.'],
+                templateTitle: 'OPS - [Ajustes] - [Breve resumo]',
+                template: `Olá, equipe OPS.\n\nTipo de Ajuste: [Planilha / Fluxos]\nLocalização: [Link]\nCenário atual: [Descrever]\nCenário esperado: [Descrever]`
+            },
+            {
+                id: 'relatorios', icon: <IconSpreadsheet />, title: 'Relatórios e Extração',
+                description: 'Solicitações de extração de base de dados.',
+                rules: ['Descreva a finalidade da extração.', 'Informe os filtros e colunas necessárias.'],
+                templateTitle: 'OPS - Relatórios - [Nome do Relatório]',
+                template: `Olá, equipe OPS. Solicito a extração de dados.\n\nObjetivo: [Qual a finalidade?]\nFiltros necessários: [Ex: Último mês]\nCampos necessários: [Quais colunas?]`
+            },
+            {
+                id: 'contratos_empresas', icon: <IconBuilding />, title: 'Contratos (Signow)',
+                description: 'Demandas relacionadas à inclusão de contratos.',
+                rules: ['Prazo de até 2 dias úteis após primeira resposta.', 'Obrigatório Template do contrato e aprovação do jurídico.'],
+                templateTitle: 'OPS - [Contratos] - [Empresa]',
+                template: `Olá. Solicito apoio com contrato.\n\nEmpresa: [Nome]\nSolicitação: [Descrever]\nTemplate: [Anexado]\nAprovação: [Anexada]`
+            },
+            {
+                id: 'alinhamento_melhoria', icon: <IconLightbulb />, title: 'Alinhamento/Melhoria',
+                description: 'Para propor melhorias operacionais ou solicitar agendas.',
+                rules: ['Descreva o impacto esperado.', 'Envie a pauta do que será discutido.'],
+                templateTitle: 'OPS - [Alinhamento] - [Assunto]',
+                template: `Olá. Gostaria de solicitar um alinhamento.\n\nPauta: [Como funciona hoje]\nMelhoria: [O que podemos mudar]\nImpacto: [Resultado esperado]`
+            },
+            {
+                id: 'outros', icon: <IconHelp />, title: 'Outros Chamados',
+                description: 'Para qualquer demanda que não se encaixe nas categorias.',
+                rules: ['Seja detalhista.', 'Sempre que houver, inclua links ou prints.'],
+                templateTitle: 'OPS - Outros - [Resumo]',
+                template: `Olá. Tenho uma solicitação fora do padrão.\n\nDescrição detalhada: [Descreva]\nSistemas envolvidos: [Ex: Salesforce]`
+            }
+        ];
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('home');
+            const [copiedText, setCopiedText] = useState(false);
+
+            const handleCopy = (text, title) => {
+                const fullText = `Título: ${title}\n\nDescrição:\n${text}`;
+                navigator.clipboard.writeText(fullText).then(() => {
+                    setCopiedText(true);
+                    setTimeout(() => setCopiedText(false), 2000);
+                });
+            };
+
+            const renderHome = () => (
+                <div className="space-y-8 animate-in fade-in duration-500">
+                    <div className="bg-white p-8 rounded-3xl shadow-[0px_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden border border-gray-100">
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Guia de Atendimento OPS</h2>
+                            <p className="text-gray-500 text-lg mb-6 max-w-2xl leading-relaxed">
+                                Portal oficial de diretrizes para gestores do <strong>Grupo Ideal Trends</strong>. 
+                                Selecione uma categoria ao lado para acessar os templates.
+                            </p>
+                            <div className="inline-flex items-center text-sm font-medium text-amber-700 bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
+                                <IconAlert className="mr-2 text-amber-500" />
+                                Demandas via chat ou presenciais sem registro no GLPI não serão tratadas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="flex items-center mb-5">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mr-3">
+                                <IconClock className="text-blue-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900">Prazos Gerais (SLA)</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            {generalRules.slas.map((sla, idx) => (
+                                <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 group">
+                                    <h4 className="font-semibold text-gray-500 text-sm uppercase mb-4">{sla.title}</h4>
+                                    <div className="flex items-baseline space-x-2 mb-3">
+                                        <p className="text-4xl font-extrabold text-gray-900">{sla.time.split(' ')[0]}</p>
+                                        <p className="text-lg font-bold text-gray-400">{sla.time.split(' ').slice(1).join(' ')}</p>
+                                    </div>
+                                    <p className="text-sm text-gray-500 font-medium">{sla.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-3xl shadow-sm p-8 border border-gray-100">
+                        <div className="flex items-center mb-6">
+                            <h3 className="text-xl font-bold text-gray-900">Prazos de Dashboards</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-gray-50 rounded-2xl p-6">
+                                <h4 className="font-bold text-gray-900 mb-4 flex items-center">PowerBI</h4>
+                                <ul className="space-y-3">
+                                    {generalRules.dashboardSlas.powerbi.map((sla, idx) => (
+                                        <li key={idx} className="flex justify-between items-center bg-white px-4 py-3 rounded-xl shadow-sm">
+                                            <span className="font-medium text-gray-600">{sla.level}</span>
+                                            <span className="text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-lg text-sm">{sla.time}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="bg-gray-50 rounded-2xl p-6">
+                                <h4 className="font-bold text-gray-900 mb-4 flex items-center">Salesforce</h4>
+                                <ul className="space-y-3">
+                                    {generalRules.dashboardSlas.salesforce.map((sla, idx) => (
+                                        <li key={idx} className="flex justify-between items-center bg-white px-4 py-3 rounded-xl shadow-sm">
+                                            <span className="font-medium text-gray-600">{sla.level}</span>
+                                            <span className="text-blue-700 font-bold bg-blue-50 px-3 py-1 rounded-lg text-sm">{sla.time}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderCategory = (category) => (
+                <div className="animate-in fade-in duration-300">
+                    <div className="bg-white rounded-3xl p-8 mb-6 shadow-sm border border-gray-100 flex items-start space-x-5">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                            {category.icon}
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-extrabold text-gray-900 mb-2">{category.title}</h2>
+                            <p className="text-gray-500 text-base leading-relaxed">{category.description}</p>
+                        </div>
+                    </div>
+
+                    <div className="mb-6">
+                        <h4 className="font-bold text-gray-900 mb-3 flex items-center text-lg">
+                            <IconInfo className="mr-2 text-blue-500" /> Requisitos Obrigatórios
+                        </h4>
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <ul className="divide-y divide-gray-100">
+                                {category.rules.map((rule, idx) => (
+                                    <li key={idx} className="px-6 py-4 flex items-start">
+                                        <div className="mt-2 mr-3 w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></div>
+                                        <span className="text-gray-600 font-medium">{rule}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {!category.isInformational && (
+                        <div>
+                            <div className="flex items-center justify-between mb-3 px-1">
+                                <h4 className="font-bold text-gray-900 text-lg">Template do Chamado</h4>
+                                <button onClick={() => handleCopy(category.template, category.templateTitle)}
+                                    className="flex items-center text-sm bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl transition-all font-medium">
+                                    {copiedText ? <IconCheck /> : <IconCopy />}
+                                    <span className="ml-2">{copiedText ? 'Copiado!' : 'Copiar para GLPI'}</span>
+                                </button>
+                            </div>
+                            <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-xl border border-gray-800 p-6">
+                                <div className="mb-5">
+                                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Título do Chamado</p>
+                                    <div className="bg-gray-800 border border-gray-700 text-blue-300 font-mono text-sm p-3 rounded-xl">{category.templateTitle}</div>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-2">Descrição</p>
+                                    <div className="bg-gray-800 border border-gray-700 p-5 rounded-xl">
+                                        <pre className="text-gray-300 font-mono text-sm whitespace-pre-wrap leading-loose">{category.template}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen font-sans flex flex-col">
+                    <header className="bg-blue-900 text-white shadow-md z-20 sticky top-0">
+                        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="bg-white p-1.5 rounded-lg text-blue-900"><IconSettings /></div>
+                                <div>
+                                    <h1 className="font-bold text-lg leading-tight tracking-wide">Portal OPS</h1>
+                                    <p className="text-xs text-blue-200 font-medium tracking-wider uppercase">Grupo Ideal Trends</p>
+                                </div>
+                            </div>
+                            <a href={GLPI_LINK} target="_blank" rel="noopener noreferrer"
+                                className="flex items-center bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-xl text-sm font-semibold">
+                                Abrir GLPI <span className="ml-2"><IconExternalLink /></span>
+                            </a>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 max-w-[1440px] mx-auto w-full flex flex-col md:flex-row p-4 md:p-6 gap-6">
+                        <aside className="w-full md:w-72 bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden h-fit md:sticky md:top-24">
+                            <div className="p-5">
+                                <button onClick={() => setActiveTab('home')}
+                                    className={`w-full flex items-center px-4 py-3.5 text-sm font-bold rounded-2xl transition-all ${activeTab === 'home' ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:bg-gray-50'}`}>
+                                    <IconBookOpen className={`mr-3 ${activeTab === 'home' ? 'text-blue-600' : 'text-gray-400'}`} />
+                                    Diretrizes e SLAs
+                                </button>
+                            </div>
+                            <div className="px-5 pb-5">
+                                <p className="px-4 text-xs font-bold text-gray-400 uppercase mb-3">Templates</p>
+                                <nav className="space-y-1.5 max-h-[calc(100vh-300px)] overflow-y-auto custom-scrollbar">
+                                    {categories.map((cat) => (
+                                        <button key={cat.id} onClick={() => setActiveTab(cat.id)}
+                                            className={`w-full flex items-center px-4 py-3.5 text-sm font-bold rounded-2xl transition-all ${activeTab === cat.id ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:bg-gray-50'}`}>
+                                            <span className={`mr-3 ${activeTab === cat.id ? 'text-blue-600' : 'text-gray-400'}`}>{cat.icon}</span>
+                                            <span className="truncate">{cat.title}</span>
+                                        </button>
+                                    ))}
+                                </nav>
+                            </div>
+                        </aside>
+
+                        <main className="flex-1 min-w-0">
+                            <div className="max-w-4xl mx-auto">
+                                {activeTab === 'home' ? renderHome() : renderCategory(categories.find(c => c.id === activeTab))}
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            );
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #E5E7EB;
-          border-radius: 20px;
-        }
-      `}} />
-    </div>
-  );
-}
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
