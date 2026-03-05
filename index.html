@@ -105,12 +105,12 @@
                 templateTitle: 'OPS - Painéis [Sistema] - Criação de Visão de [Métrica]',
                 template: `Olá, equipe OPS. Solicito a criação de um novo relatório.\n\nObjetivo: [O que analisar?]\nOrigem: [De onde vêm os dados?]\nMétricas Necessárias: [Ex: Total de casos].`
             },
-            {
-                id: 'carteiras', icon: <IconDatabase />, title: 'Indicadores e Carteiras',
-                description: 'Regras sobre Churn e Atribuição de Carteiras.',
-                rules: 'CARTEIRAS: Atribuição é responsabilidade da gestão.'],
-                isInformational: true
-            },
+{
+    id: 'carteiras', icon: <IconDatabase />, title: 'Indicadores e Carteiras',
+    description: 'Regras sobre Churn e Atribuição de Carteiras.',
+    rules: ['CARTEIRAS: Atribuição é responsabilidade da gestão.'], // CORRIGIDO
+    isInformational: true
+},
             {
                 id: 'ajustes_diversos', icon: <IconSliders />, title: 'Ajustes Diversos',
                 description: 'Para ajustes gerais em planilhas, fluxos de processos ou dados.',
@@ -340,4 +340,5 @@
     </script>
 </body>
 </html>
+
 
