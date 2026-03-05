@@ -105,12 +105,17 @@
                 templateTitle: 'OPS - Painéis [Sistema] - Criação de Visão de [Métrica]',
                 template: `Olá, equipe OPS. Solicito a criação de um novo relatório.\n\nObjetivo: [O que analisar?]\nOrigem: [De onde vêm os dados?]\nMétricas Necessárias: [Ex: Total de casos].`
             },
-{
-    id: 'carteiras', icon: <IconDatabase />, title: 'Indicadores e Carteiras',
-    description: 'Regras sobre Churn e Atribuição de Carteiras.',
-    rules: ['CARTEIRAS: Atribuição é responsabilidade da gestão.'], // CORRIGIDO
-    isInformational: true
-},
+            {
+                id: 'carteiras', icon: <IconDatabase />, title: 'Indicadores e Carteiras',
+                description: 'Regras sobre Churn e Atribuição de Carteiras.',
+                rules: [
+                    'CHURN (Fórmulas): A equipe de OPS é responsável APENAS por ajustar as fórmulas.',
+                    'CHURN (Lançamentos): Os valores (Não Renovado Mês/Mês Anterior/Inadimplente e Cancelado Inadimplente) só aparecerão se o departamento ADMINISTRATIVO lançar os dados e os nomes dos analistas corretamente em sua planilha de controle.',
+                    'FINANCEIRO: O OPS NÃO realiza lançamentos de churn em nenhum fluxo e não responde por controles financeiros.',
+                    'CARTEIRAS: A atribuição de carteiras é responsabilidade exclusiva da gestão.'
+                ],
+                isInformational: true
+            },
             {
                 id: 'ajustes_diversos', icon: <IconSliders />, title: 'Ajustes Diversos',
                 description: 'Para ajustes gerais em planilhas, fluxos de processos ou dados.',
@@ -340,5 +345,3 @@
     </script>
 </body>
 </html>
-
-
