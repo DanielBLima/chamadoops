@@ -5,17 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal OPS - Grupo Ideal Trends</title>
     
-    <!-- Tailwind CSS para o Visual -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React e ReactDOM (O Motor) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Babel (O Tradutor do Código) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Lucide Icons (Ícones via CDN estático) -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -26,7 +22,6 @@
     </style>
 </head>
 <body>
-    <!-- Aqui é onde o App vai nascer -->
     <div id="root"></div>
 
     <script type="text/babel">
@@ -175,10 +170,19 @@
                                 Portal oficial de diretrizes para gestores do <strong>Grupo Ideal Trends</strong>. 
                                 Selecione uma categoria ao lado para acessar os templates.
                             </p>
-                            <div className="inline-flex items-center text-sm font-medium text-amber-700 bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
-                                <IconAlert className="mr-2 text-amber-500" />
-                                Demandas via chat ou presenciais sem registro no GLPI não serão tratadas.
+                            
+                            {/* Bloco de Avisos Importantes */}
+                            <div className="flex flex-col space-y-3">
+                                <div className="inline-flex items-center text-sm font-medium text-amber-700 bg-amber-50 px-4 py-3 rounded-xl border border-amber-100 w-fit">
+                                    <IconAlert className="mr-3 flex-shrink-0 text-amber-500" />
+                                    Demandas via chat ou presenciais sem registro no GLPI não serão tratadas.
+                                </div>
+                                <div className="inline-flex items-center text-sm font-medium text-red-700 bg-red-50 px-4 py-3 rounded-xl border border-red-100 w-fit">
+                                    <IconAlert className="mr-3 flex-shrink-0 text-red-500" />
+                                    <span><strong>Atenção:</strong> O OPS não atende chamados da Berrini. Departamento exclusivo para atendimento das operações (DUMAS).</span>
+                                </div>
                             </div>
+
                         </div>
                     </div>
 
